@@ -60,6 +60,20 @@ class SchemaExtractor:
                         "to_column": target_column
                     })
 
+                schema["metadata"] = {
+
+                    "db_id": db["db_id"],
+
+                    "table_count": len(table_names),
+
+                    # Spider includes one pseudo-column (*)
+                    "column_count": len(column_names) - 1,
+
+                    "primary_key_count": len(db["primary_keys"]),
+
+                    "foreign_key_count": len(db["foreign_keys"])
+                }
+
                 
                 return schema
 

@@ -35,3 +35,11 @@ print("\nForeign Keys\n")
 for fk in schema["foreign_keys"]:
 
     print(fk)
+
+from src.schema_formatter import SchemaFormatter
+
+formatter = SchemaFormatter()
+
+schema_text = formatter.format(schema)
+
+print(schema_text)
