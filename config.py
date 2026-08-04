@@ -1,11 +1,29 @@
+# ==========================
+# DATASET
+# ==========================
+
+DATA_PATH = "data"
+
+DATABASE_PATH = "data/database"
+
+DEV_FILE = "data/dev.json"
+
+TABLES_FILE = "data/tables.json"
+
+# ==========================
+# MODEL
+# ==========================
+
 MODEL_NAME = "qwen2.5-coder:7b"
 
-TEMPERATURE = 0.0
+TEMPERATURE = 0
 
 MAX_TOKENS = 256
 
-TOP_P = 0.95
+# ==========================
+# OUTPUT
+# ==========================
 
-DATASET = "Spider"
+RESULTS_DIR = "results"
 
-OUTPUT_FOLDER = "results/"
+CHECKPOINT_DIR = "checkpoints"
