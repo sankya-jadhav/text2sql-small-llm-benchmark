@@ -53,5 +53,4 @@ prompt = builder.build_zero_shot(
     sample["question"]
 )
 
-with open("prompts/zero_shot_example.txt", "w", encoding="utf-8") as f:
-    f.write(prompt)
+print(prompt)

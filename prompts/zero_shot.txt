@@ -7,7 +7,7 @@ The generated SQL will be executed automatically, so it must be valid.
 --------------------------------------------------
 Database Schema (Read Carefully)
 
-{schema_text}
+{schema}
 
 --------------------------------------------------
 

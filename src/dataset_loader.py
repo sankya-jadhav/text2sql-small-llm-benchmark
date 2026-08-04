@@ -7,8 +7,10 @@ class DatasetLoader:
         self.dev_path = dev_path
         self.tables_path = tables_path
 
-        self.dev_data = None
-        self.tables_data = None
+        self.dev_data = []
+        self.tables_data = []
+
+        self.load()
 
     def load(self):
 
@@ -19,13 +21,15 @@ class DatasetLoader:
             self.tables_data = json.load(f)
 
     def get_question(self, index):
-
         return self.dev_data[index]
 
     def total_questions(self):
-
         return len(self.dev_data)
 
     def total_databases(self):
-
         return len(self.tables_data)
+    def get_statistics(self):
+        return {
+            "questions": self.total_questions(),
+            "databases": self.total_databases()
+        }
