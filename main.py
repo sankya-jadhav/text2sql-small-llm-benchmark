@@ -43,3 +43,15 @@ formatter = SchemaFormatter()
 schema_text = formatter.format(schema)
 
 print(schema_text)
+
+from src.prompt_builder import PromptBuilder
+
+builder = PromptBuilder()
+
+prompt = builder.build_zero_shot(
+    schema_text,
+    sample["question"]
+)
+
+with open("prompts/zero_shot_example.txt", "w", encoding="utf-8") as f:
+    f.write(prompt)
