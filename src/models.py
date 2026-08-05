@@ -22,3 +22,14 @@ class ExperimentResult:
     execution_success: bool
     execution_accuracy: bool
     execution_error: str | None = None
+
+@dataclass
+class ExecutionResult:
+
+    success: bool
+
+    rows: list
+
+    execution_time: float
+
+    error: str | None = None

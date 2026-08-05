@@ -33,3 +33,14 @@ class DatasetLoader:
             "questions": self.total_questions(),
             "databases": self.total_databases()
         }
+    def get_available_questions(self, available_databases):
+
+        return [
+
+            question
+
+            for question in self.dev_data
+
+            if question["db_id"] in available_databases
+
+        ]
