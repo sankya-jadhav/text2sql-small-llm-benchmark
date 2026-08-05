@@ -1,28 +1,37 @@
-from src.models import ExecutionResult
-
-
 class Evaluator:
-    """
-    Evaluates generated SQL using execution accuracy.
-    """
 
     def execution_accuracy(
         self,
-        gold_result: ExecutionResult,
-        predicted_result: ExecutionResult,
+        gold_result,
+        generated_result
     ) -> bool:
-        """
-        Returns True if both SQL queries produce identical outputs.
-        """
 
-        # Generated SQL failed
-        if not predicted_result.success:
+        if not generated_result.success:
             return False
 
-        # Gold SQL should always succeed
-        if not gold_result.success:
-            raise RuntimeError(
-                "Gold SQL execution failed. Dataset may be corrupted."
-            )
+        return gold_result.rows == generated_result.rows
 
-        return gold_result.rows == predicted_result.rows
+
+    def exact_match(
+        self,
+        gold_sql: str,
+        generated_sql: str
+    ) -> bool:
+
+        gold = " ".join(
+            gold_sql.lower().split()
+        )
+
+        pred = " ".join(
+            generated_sql.lower().split()
+        )
+
+        return gold == pred
+
+
+    def valid_sql(
+        self,
+        execution_result
+    ) -> bool:
+
+        return execution_result.success

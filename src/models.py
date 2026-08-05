@@ -37,14 +37,37 @@ class ExecutionResult:
 
 @dataclass
 class EvaluationResult:
+
+    # Question Information
     question_id: int
-    db_id: str 
+    db_id: str
+    question: str
+
+    # Experiment Information
     model_name: str
     prompt_type: str
-    execution_accuracy: bool
-    latency: float
+    prompt_version: str
+
+    # Generated Output
     generated_sql: str
     gold_sql: str
+
+    # Evaluation Metrics
+    execution_accuracy: bool
+    exact_match: bool
+    valid_sql: bool
+
+    # Execution Results
+    gold_result: list
+    generated_result: list
+
+    # Performance Metrics
+    latency: float
+    prompt_tokens: int | None
+    completion_tokens: int | None
+    total_tokens: int | None
+
+    # Error Information
     error: str | None = None
 
 

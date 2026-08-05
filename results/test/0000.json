@@ -1,0 +1,24 @@
+{
+    "question_id": 0,
+    "db_id": "concert_singer",
+    "question": "How many singers do we have?",
+    "model_name": "Qwen/Qwen2.5-0.5B-Instruct",
+    "prompt_type": "zero_shot",
+    "prompt_version": "v2",
+    "generated_sql": "",
+    "gold_sql": "SELECT count(*) FROM singer",
+    "execution_accuracy": false,
+    "exact_match": false,
+    "valid_sql": true,
+    "gold_result": [
+        [
+            6
+        ]
+    ],
+    "generated_result": [],
+    "latency": 0.1859102000016719,
+    "prompt_tokens": null,
+    "completion_tokens": null,
+    "total_tokens": null,
+    "error": null
+}

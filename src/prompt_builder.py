@@ -71,3 +71,42 @@ class PromptBuilder:
 
     def build_hybrid(self, schema: str, question: str):
         raise NotImplementedError("Hybrid Prompt not implemented yet.")
+    
+    def build(
+        self,
+        strategy: str,
+        schema: str,
+        question: str,
+        version: str = "v2"
+    ):
+
+        builders = {
+            "zero_shot": lambda: self.build_zero_shot(
+                schema,
+                question,
+                version
+            ),
+            "few_shot": lambda: self.build_few_shot(
+                schema,
+                question
+            ),
+            "cot": lambda: self.build_cot(
+                schema,
+                question
+            ),
+            "schema_pruning": lambda: self.build_schema_pruning(
+                schema,
+                question
+            ),
+            "hybrid": lambda: self.build_hybrid(
+                schema,
+                question
+            )
+        }
+
+        if strategy not in builders:
+            raise ValueError(
+                f"Unknown strategy: {strategy}"
+            )
+
+        return builders[strategy]() 

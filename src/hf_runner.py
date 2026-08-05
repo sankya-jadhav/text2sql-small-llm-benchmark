@@ -77,15 +77,23 @@ class HFRunner(ModelRunner):
             )
 
             generated_ids = outputs[0][inputs["input_ids"].shape[1]:]
+            print("=" * 60)
+            print("Generated IDs Length:", generated_ids.shape[0])            
 
             generated_text = self.tokenizer.decode(
                 generated_ids,
                 skip_special_tokens=True
             )
-
+            print("=" * 60)
+            print("RAW MODEL OUTPUT")
+            print(generated_text)
+            
             generated_text = SQLCleaner.clean(
                 generated_text
             )
+            print("=" * 60)
+            print("AFTER SQL CLEANER")
+            print(repr(generated_text))
 
             latency = time.perf_counter() - start
 
