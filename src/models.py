@@ -14,6 +14,9 @@ class GenerationResult:
     latency: float
     success: bool
     error: str | None = None
+    prompt_tokens: int | None = None
+    completion_tokens: int | None = None
+    total_tokens: int | None = None
 
 
 # ==========================================================
