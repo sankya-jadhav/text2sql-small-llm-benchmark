@@ -1,5 +1,4 @@
 import time
-
 import torch
 
 from transformers import AutoTokenizer
@@ -10,79 +9,124 @@ from src.models import GenerationResult
 
 
 class HFRunner(ModelRunner):
+    """
+    Hugging Face implementation of ModelRunner.
 
-    def __init__(self, model_name):
+    Supports:
+    - Qwen
+    - DeepSeek
+    - Llama
+    """
+
+    def __init__(self, model_name: str):
 
         super().__init__(model_name)
 
-        print(f"Loading {model_name}...")
+        print("=" * 60)
+        print(f"Loading model: {model_name}")
+        print("=" * 60)
 
         self.tokenizer = AutoTokenizer.from_pretrained(
-            model_name
+            model_name,
+            trust_remote_code=True
         )
 
         self.model = AutoModelForCausalLM.from_pretrained(
             model_name,
+            torch_dtype=torch.float16,
             device_map="auto",
-            torch_dtype=torch.float16
+            trust_remote_code=True
         )
 
-        print("Model Loaded Successfully!")
+        self.model.eval()
+
+        print("✅ Model Loaded Successfully")
 
     def generate(
         self,
-        prompt,
-        prompt_type
-    ):
+        prompt: str,
+        prompt_type: str
+    ) -> GenerationResult:
 
         start = time.perf_counter()
 
-        inputs = self.tokenizer(
-            prompt,
-            return_tensors="pt"
-        ).to(self.model.device)
+        try:
 
-        outputs = self.model.generate(
+            messages = [
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ]
 
-            **inputs,
+            formatted_prompt = self.tokenizer.apply_chat_template(
+                messages,
+                tokenize=False,
+                add_generation_prompt=True
+            )
 
-            max_new_tokens=256,
+            inputs = self.tokenizer(
+                formatted_prompt,
+                return_tensors="pt"
+            ).to(self.model.device)
 
-            temperature=0.0,
+            outputs = self.model.generate(
+                **inputs,
+                max_new_tokens=256,
+                do_sample=False,
+                temperature=0.0,
+            )
 
-            do_sample=False
+            generated_ids = outputs[0][inputs["input_ids"].shape[1]:]
 
-        )
+            generated_text = self.tokenizer.decode(
+                generated_ids,
+                skip_special_tokens=True
+            ).strip()
 
-        generated_text = self.tokenizer.decode(
+            latency = time.perf_counter() - start
 
-            outputs[0],
+            prompt_tokens = inputs["input_ids"].shape[1]
+            completion_tokens = generated_ids.shape[0]
 
-            skip_special_tokens=True
+            return GenerationResult(
 
-        )
+                model_name=self.model_name,
 
-        latency = time.perf_counter() - start
+                prompt_type=prompt_type,
 
-        completion = generated_text[len(prompt):].strip()
+                prompt=prompt,
 
-        return GenerationResult(
+                generated_sql=generated_text,
 
-            model_name=self.model_name,
+                latency=latency,
 
-            prompt_type=prompt_type,
+                success=True,
 
-            prompt=prompt,
+                prompt_tokens=prompt_tokens,
 
-            generated_sql=completion,
+                completion_tokens=completion_tokens,
 
-            latency=latency,
+                total_tokens=prompt_tokens + completion_tokens
+            )
 
-            success=True,
+        except Exception as e:
 
-            prompt_tokens=inputs["input_ids"].shape[1],
+            latency = time.perf_counter() - start
 
-            completion_tokens=outputs.shape[1] - inputs["input_ids"].shape[1],
+            return GenerationResult(
 
-            total_tokens=outputs.shape[1]
-        )
+                model_name=self.model_name,
+
+                prompt_type=prompt_type,
+
+                prompt=prompt,
+
+                generated_sql="",
+
+                latency=latency,
+
+                success=False,
+
+                error=str(e)
+            )
