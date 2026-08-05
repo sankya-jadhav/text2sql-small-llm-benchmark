@@ -28,20 +28,37 @@ class PromptBuilder:
         with open(template_path, "r", encoding="utf-8") as file:
             return file.read()
 
-    def build_zero_shot(self, schema: str, question: str) -> str:
+    def build_zero_shot(
+        self,
+        schema: str,
+        question: str,
+        version: str = "v1"
+    ) -> str:
         """
         Build a Zero-Shot prompt.
+
+        Parameters
+        ----------
+        schema : str
+            Formatted database schema.
+
+        question : str
+            Natural language question.
+
+        version : str
+            Prompt version (v1, v2, ...).
         """
 
-        template = self._load_template("zero_shot.txt")
+        template = self._load_template(
+            f"zero_shot_{version}.txt"
+        )
 
         return template.format(
             schema=schema,
             question=question
         )
-
-    # Future Prompt Types
-    # ----------------------------
+        # Future Prompt Types
+        # ----------------------------
 
     def build_few_shot(self, schema: str, question: str):
         raise NotImplementedError("Few-Shot Prompt not implemented yet.")

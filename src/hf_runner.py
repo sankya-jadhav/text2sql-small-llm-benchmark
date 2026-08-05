@@ -6,7 +6,7 @@ from transformers import AutoModelForCausalLM
 
 from src.model_runner import ModelRunner
 from src.models import GenerationResult
-
+from src.sql_cleaner import SQLCleaner
 
 class HFRunner(ModelRunner):
     """
@@ -73,8 +73,7 @@ class HFRunner(ModelRunner):
             outputs = self.model.generate(
                 **inputs,
                 max_new_tokens=256,
-                do_sample=False,
-                temperature=0.0,
+                do_sample=False
             )
 
             generated_ids = outputs[0][inputs["input_ids"].shape[1]:]
@@ -82,7 +81,11 @@ class HFRunner(ModelRunner):
             generated_text = self.tokenizer.decode(
                 generated_ids,
                 skip_special_tokens=True
-            ).strip()
+            )
+
+            generated_text = SQLCleaner.clean(
+                generated_text
+            )
 
             latency = time.perf_counter() - start
 
