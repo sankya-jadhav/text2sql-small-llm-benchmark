@@ -40,6 +40,16 @@ runner = ExperimentRunner(
     result_dir="results/test"
 )
 
+sample = loader.get_question(0)
+
+print(sample["db_id"])
+
+print(
+    manager.get_database_path(
+        sample["db_id"]
+    )
+)
+
 result = runner.run_question(
     question_index=0,
     strategy="zero_shot",

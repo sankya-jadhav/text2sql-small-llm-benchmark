@@ -2,12 +2,18 @@
 # DATASET
 # ==========================================================
 
-DATA_DIR = "data"
-DATABASE_DIR = "data/database"
+from pathlib import Path
 
-DEV_FILE = "data/dev.json"
-TABLES_FILE = "data/tables.json"
+COLAB_DATASET = Path("/content/drive/MyDrive/spider_data/spider_data")
 
+if COLAB_DATASET.exists():
+    DATA_ROOT = COLAB_DATASET
+else:
+    DATA_ROOT = Path("data")
+
+DATABASE_ROOT = DATA_ROOT / "database"
+DEV_JSON = DATA_ROOT / "dev.json"
+TABLES_JSON = DATA_ROOT / "tables.json"
 # ==========================================================
 # MODEL
 # ==========================================================
