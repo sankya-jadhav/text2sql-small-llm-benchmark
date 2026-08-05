@@ -1,6 +1,10 @@
 from dataclasses import dataclass
 
 
+# ==========================================================
+# LLM Generation Result
+# ==========================================================
+
 @dataclass
 class GenerationResult:
     model_name: str
@@ -12,6 +16,39 @@ class GenerationResult:
     error: str | None = None
 
 
+# ==========================================================
+# SQL Execution Result
+# ==========================================================
+
+@dataclass
+class ExecutionResult:
+    success: bool
+    rows: list
+    execution_time: float
+    error: str | None = None
+
+
+# ==========================================================
+# Evaluation Result (One Experiment Record)
+# ==========================================================
+
+@dataclass
+class EvaluationResult:
+    question_id: int
+    db_id: str 
+    model_name: str
+    prompt_type: str
+    execution_accuracy: bool
+    latency: float
+    generated_sql: str
+    gold_sql: str
+    error: str | None = None
+
+
+# ==========================================================
+# Complete Experiment Record
+# ==========================================================
+
 @dataclass
 class ExperimentResult:
     question_id: int
@@ -22,14 +59,3 @@ class ExperimentResult:
     execution_success: bool
     execution_accuracy: bool
     execution_error: str | None = None
-
-@dataclass
-class ExecutionResult:
-
-    success: bool
-
-    rows: list
-
-    execution_time: float
-
-    error: str | None = None
