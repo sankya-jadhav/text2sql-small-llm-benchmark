@@ -13,12 +13,17 @@ print("=" * 70)
 # Dataset
 # -------------------------
 
-loader = DatasetLoader(
-    "data/dev.json",
-    "data/tables.json"
-)
+from config import DEV_JSON, TABLES_JSON, DATABASE_ROOT
 
-manager = DatabaseManager("data/database")
+loader = DatasetLoader(
+    DEV_JSON,
+    TABLES_JSON
+)
+loader.load()
+
+manager = DatabaseManager(
+    DATABASE_ROOT
+)
 
 available = manager.get_available_databases()
 

@@ -13,7 +13,12 @@ from src.model_runner import ModelRunner
 def run_baseline_experiment():
     print("Initializing Baseline (Zero-Shot) Experiment...")
     # Load dataset
-    loader = DatasetLoader("data/dev.json", "data/tables.json")
+    from config import DEV_JSON, TABLES_JSON
+
+    loader = DatasetLoader(
+        DEV_JSON,
+        TABLES_JSON
+    )
     loader.load()
     print(f"Loaded {loader.total_questions()} questions and {loader.total_databases()} databases.")
 

@@ -1,8 +1,9 @@
 import json
 
-with open("data/dev.json", "r", encoding="utf-8") as f:
-    dev = json.load(f)
+from config import DEV_JSON
 
+with open(DEV_JSON, "r", encoding="utf-8") as f:
+    dev = json.load(f)
 sample = dev[0]
 
 print("Question:")

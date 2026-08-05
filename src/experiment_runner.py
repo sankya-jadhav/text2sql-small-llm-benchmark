@@ -4,7 +4,7 @@ from huggingface_hub.inference._generated.types import zero_shot_image_classific
 import json
 from pathlib import Path
 from dataclasses import asdict
-
+result_dir=RESULTS_DIR
 from src.models import EvaluationResult
 
 
@@ -20,7 +20,7 @@ class ExperimentRunner:
         model_runner,
         sql_executor,
         evaluator,
-        result_dir="results"
+        result_dir=RESULTS_DIR
     ):
 
         self.loader = loader

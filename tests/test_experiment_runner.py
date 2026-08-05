@@ -7,15 +7,19 @@ from src.hf_runner import HFRunner
 from src.sql_executor import SQLExecutor
 from src.evaluator import Evaluator
 from src.experiment_runner import ExperimentRunner
+from config import RESULTS_DIR
 
+from config import DEV_JSON, TABLES_JSON, DATABASE_ROOT
 
 loader = DatasetLoader(
-    "data/dev.json",
-    "data/tables.json"
+    DEV_JSON,
+    TABLES_JSON
 )
 loader.load()
 
-manager = DatabaseManager("data/database")
+manager = DatabaseManager(
+    DATABASE_ROOT
+)
 
 runner = ExperimentRunner(
 
@@ -37,7 +41,7 @@ runner = ExperimentRunner(
 
     evaluator=Evaluator(),
 
-    result_dir="results/test"
+    result_dir=RESULTS_DIR
 )
 
 sample = loader.get_question(0)

@@ -8,12 +8,23 @@ from src.sql_executor import SQLExecutor
 from src.evaluator import Evaluator
 
 # --------------------------------------------------
+# --------------------------------------------------
+# Configuration
+# --------------------------------------------------
+
+from config import (
+    DEV_JSON,
+    TABLES_JSON,
+    DATABASE_ROOT
+)
+
+# --------------------------------------------------
 # Dataset
 # --------------------------------------------------
 
 loader = DatasetLoader(
-    "data/dev.json",
-    "data/tables.json"
+    DEV_JSON,
+    TABLES_JSON
 )
 
 loader.load()
@@ -24,12 +35,13 @@ sample = loader.get_question(0)
 # Database
 # --------------------------------------------------
 
-manager = DatabaseManager("data/database")
+manager = DatabaseManager(
+    DATABASE_ROOT
+)
 
 database = manager.get_database_path(
     sample["db_id"]
 )
-
 # --------------------------------------------------
 # Prompt
 # --------------------------------------------------
