@@ -67,7 +67,13 @@ TEMPERATURE = 0.0
 # OUTPUT
 # ==========================================================
 
-RESULTS_DIR = PROJECT_ROOT / "results"
+if ENVIRONMENT == "colab":
+
+    RESULTS_DIR = DATA_ROOT / "results"
+
+else:
+
+    RESULTS_DIR = PROJECT_ROOT / "results"
 
 CHECKPOINT_DIR = PROJECT_ROOT / "checkpoints"
 
