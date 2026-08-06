@@ -47,24 +47,24 @@ class ExperimentRunner:
         result: EvaluationResult
     ):
 
-        self.result_dir.mkdir(
-            parents=True,
-            exist_ok=True
+        output_file = self.get_result_file(
+            result.model_name,
+            result.prompt_type,
+            result.prompt_version
         )
-
-        output_file = self.result_dir / f"{result.question_id:04d}.json"
 
         with open(
             output_file,
-            "w",
+            "a",
             encoding="utf-8"
         ) as f:
 
             json.dump(
-                asdict(result),
-                f,
-                indent=4
+                result.__dict__,
+                f
             )
+
+            f.write("\n")
 
     def run_question(
         self,
@@ -165,3 +165,63 @@ class ExperimentRunner:
         self.save_result(result)
 
         return result
+
+
+    def get_result_file(
+        self,
+        model_name,
+        strategy,
+        version
+    ):
+        """
+        Returns the JSONL file for one experiment.
+        """
+
+        safe_model = model_name.split("/")[-1]
+
+        model_dir = self.result_dir / safe_model
+
+        model_dir.mkdir(
+            parents=True,
+            exist_ok=True
+        )
+
+        return model_dir / f"{strategy}_{version}.jsonl"
+
+
+    def load_completed_questions(
+        self,
+        model_name,
+        strategy,
+        version
+    ):
+        """
+        Returns all completed question ids.
+        """
+
+        completed = set()
+
+        result_file = self.get_result_file(
+            model_name,
+            strategy,
+            version
+        )
+
+        if not result_file.exists():
+            return completed
+
+        with open(
+            result_file,
+            "r",
+            encoding="utf-8"
+        ) as f:
+
+            for line in f:
+
+                data = json.loads(line)
+
+                completed.add(
+                    data["question_id"]
+                )
+
+        return completed

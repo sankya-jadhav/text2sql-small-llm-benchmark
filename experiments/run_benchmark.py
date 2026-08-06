@@ -63,6 +63,15 @@ runner = ExperimentRunner(
 model = HFRunner(
     MODEL_NAME
 )
+
+completed = runner.load_completed_questions(
+    MODEL_NAME,
+    "zero_shot",
+    "v2"
+)
+
+print(f"Completed Questions Found : {len(completed)}")
+
 TEST_MODE = True
 TEST_SIZE = 5
 if TEST_MODE:
@@ -81,6 +90,13 @@ for i, sample in enumerate(benchmark):
     print("Question :", sample["question"])
 
     question_index = loader.dev_data.index(sample)
+
+    if question_index in completed:
+
+        print(f"Skipping Question {question_index}")
+
+        continue
+
 
     result = runner.run_question(
 
@@ -110,5 +126,14 @@ correct = sum(
 print("=" * 60)
 print("SUMMARY")
 print("=" * 60)
-print(f"Questions Run       : {len(results)}")
-print(f"Execution Accuracy  : {correct}/{len(results)}")
+
+print(f"Already Completed : {len(completed)}")
+print(f"Executed This Run : {len(results)}")
+print(f"Total Benchmark   : {len(benchmark)}")
+
+correct = sum(
+    r.execution_accuracy
+    for r in results
+)
+
+print(f"Execution Accuracy : {correct}/{len(results)}")
