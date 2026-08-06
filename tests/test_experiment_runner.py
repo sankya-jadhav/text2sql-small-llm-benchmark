@@ -9,6 +9,10 @@ from src.evaluator import Evaluator
 from src.experiment_runner import ExperimentRunner
 from config import RESULTS_DIR
 from config import MODEL_NAME
+from config import MODEL_NAME
+from src.hf_runner import HFRunner
+
+model = HFRunner(MODEL_NAME)
 
 from config import DEV_JSON, TABLES_JSON, DATABASE_ROOT
 
@@ -54,6 +58,7 @@ print(
 
 result = runner.run_question(
     question_index=0,
+    model_runner=model,
     strategy="zero_shot",
     prompt_version="v2"
 )

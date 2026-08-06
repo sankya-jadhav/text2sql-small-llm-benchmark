@@ -69,6 +69,7 @@ class ExperimentRunner:
     def run_question(
         self,
         question_index: int,
+        model_runner,
         strategy: str = "zero_shot",
         prompt_version: str = "v2"
     ):
@@ -96,9 +97,9 @@ class ExperimentRunner:
             version=prompt_version
         )
 
-        generation = self.model_runner.generate(
+        generation = model_runner.generate(
             prompt,
-            prompt_type=f"{strategy}_{prompt_version}"
+            prompt_type=strategy
         )
 
         generated_result = self.sql_executor.execute(
