@@ -97,8 +97,9 @@ for i, sample in enumerate(benchmark):
 
         continue
 
-
-    result = runner.run_question(
+    try:
+        
+        result = runner.run_question(
 
         question_index=question_index,
 
@@ -108,14 +109,29 @@ for i, sample in enumerate(benchmark):
 
         prompt_version="v2"
 
-    )
+        )
 
-    results.append(result)
+        results.append(result)
 
-    print("Execution Accuracy :", result.execution_accuracy)
-    print("Exact Match        :", result.exact_match)
-    print("Latency            :", f"{result.latency:.2f}s")
+        print("Execution Accuracy :", result.execution_accuracy)
+        print("Exact Match        :", result.exact_match)
+        print("Latency            :", f"{result.latency:.2f}s")
+        print()
+    except Exception as e:
+
+        print(f"[ERROR] Question {question_index}")
+
+        print(e)
+
     print()
+
+    if (i + 1) % 10 == 0:
+
+        print("=" * 60)
+
+        print(f"Completed {i + 1}/{len(benchmark)} questions")
+
+        print("=" * 60)
 
 
 correct = sum(
@@ -137,3 +153,16 @@ correct = sum(
 )
 
 print(f"Execution Accuracy : {correct}/{len(results)}")
+
+import gc
+import torch
+
+del model
+
+gc.collect()
+
+torch.cuda.empty_cache()
+
+print()
+
+print("GPU Memory Released")
