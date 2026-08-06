@@ -22,7 +22,7 @@ class StratifiedSampler:
         random_seed=42
     ):
 
-        self.loader = questions
+        self.questions  = questions
 
         self.sample_size = sample_size
 
@@ -93,7 +93,7 @@ class StratifiedSampler:
 
         benchmark = [
 
-            self.questions(i)
+            self.questions[i]
 
             for i in sampled_indices
 
