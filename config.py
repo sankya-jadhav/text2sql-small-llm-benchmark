@@ -52,18 +52,17 @@ DEFAULT_PROMPT_VERSION = "v2"
 # MODEL
 # ==========================================================
 
-# Temporary model for development
-MODEL_NAME = "Qwen/Qwen2.5-0.5B-Instruct"
+# ==========================================================
+# MODEL
+# ==========================================================
 
-# Future benchmark models
-# MODEL_NAME = "Qwen/Qwen2.5-Coder-7B-Instruct"
-# MODEL_NAME = "deepseek-ai/deepseek-coder-6.7b-instruct"
-# MODEL_NAME = "meta-llama/Llama-3.1-8B-Instruct"
+MODEL_NAME = "Qwen/Qwen2.5-Coder-7B-Instruct"
 
-TEMPERATURE = 0.0
+LOAD_IN_4BIT = True
 
 MAX_NEW_TOKENS = 256
 
+TEMPERATURE = 0.0
 # ==========================================================
 # OUTPUT
 # ==========================================================
@@ -84,4 +83,4 @@ RANDOM_SEED = 42
 # DEBUG
 # ==========================================================
 
-DEBUG = True
+DEBUG = False

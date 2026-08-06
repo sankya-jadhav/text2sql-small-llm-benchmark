@@ -1,3 +1,7 @@
+from src.logger import get_logger
+
+logger = get_logger(__name__)
+
 class SchemaExtractor:
 
     def __init__(self, tables_data):
@@ -32,6 +36,7 @@ class SchemaExtractor:
 
                             schema["tables"][table_name].append(col_name)
 
+                logger.debug(f"Tables: {schema['tables']}")
                 # ----------------------------
                 # Primary Keys
                 # ----------------------------
@@ -43,7 +48,7 @@ class SchemaExtractor:
                         "table": table_names[table_id],
                         "column": column_name
                     })
-
+                logger.debug(f"Primary Keys: {schema['primary_keys']}")
                 # ----------------------------
                 # Foreign Keys
                 # ----------------------------
@@ -59,6 +64,8 @@ class SchemaExtractor:
                         "to_table": table_names[target_table],
                         "to_column": target_column
                     })
+                    
+                logger.debug(f"Foreign Keys: {schema['foreign_keys']}")
 
                 schema["metadata"] = {
 
