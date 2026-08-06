@@ -5,7 +5,9 @@ This file contains all configurable paths and experiment
 settings. It automatically detects whether the project is
 running locally or on Google Colab.
 """
+from config import MODEL_NAME
 
+print("MODEL FROM CONFIG:", MODEL_NAME)
 from pathlib import Path
 
 # ==========================================================

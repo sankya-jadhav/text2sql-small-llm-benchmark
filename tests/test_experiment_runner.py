@@ -8,6 +8,7 @@ from src.sql_executor import SQLExecutor
 from src.evaluator import Evaluator
 from src.experiment_runner import ExperimentRunner
 from config import RESULTS_DIR
+from config import MODEL_NAME
 
 from config import DEV_JSON, TABLES_JSON, DATABASE_ROOT
 
@@ -33,9 +34,6 @@ runner = ExperimentRunner(
 
     prompt_builder=PromptBuilder(),
 
-    model_runner=HFRunner(
-        "Qwen/Qwen2.5-0.5B-Instruct"
-    ),
 
     sql_executor=SQLExecutor(),
 

@@ -1,7 +1,9 @@
 from src.hf_runner import HFRunner
 
+from config import MODEL_NAME
+
 runner = HFRunner(
-    model_name="Qwen/Qwen2.5-0.5B-Instruct"
+    MODEL_NAME
 )
 
 result = runner.generate(

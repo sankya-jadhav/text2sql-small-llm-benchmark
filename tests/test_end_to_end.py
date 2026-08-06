@@ -65,8 +65,10 @@ prompt = builder.build_zero_shot(
 # Model
 # --------------------------------------------------
 
+from config import MODEL_NAME
+
 runner = HFRunner(
-    "Qwen/Qwen2.5-0.5B-Instruct"
+    MODEL_NAME
 )
 
 generation = runner.generate(

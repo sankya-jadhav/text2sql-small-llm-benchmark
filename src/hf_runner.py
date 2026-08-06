@@ -3,7 +3,7 @@ import torch
 
 from transformers import AutoTokenizer
 from transformers import AutoModelForCausalLM
-
+from config import MAX_NEW_TOKENS
 from src.model_runner import ModelRunner
 from src.models import GenerationResult
 from src.sql_cleaner import SQLCleaner
@@ -16,6 +16,8 @@ from config import (
 from src.logger import get_logger
 
 logger = get_logger(__name__)
+
+
 
 class HFRunner(ModelRunner):
     """
@@ -97,7 +99,7 @@ class HFRunner(ModelRunner):
 
             outputs = self.model.generate(
                 **inputs,
-                max_new_tokens=256,
+                max_new_tokens=MAX_NEW_TOKENS,
                 do_sample=False
             )
 
