@@ -11,6 +11,22 @@ from src.sql_executor import SQLExecutor
 from src.evaluator import Evaluator
 from src.experiment_runner import ExperimentRunner
 from src.hf_runner import HFRunner
+from config import TEST_MODE, TEST_SIZE
+
+
+# ==========================================================
+# EXPERIMENT CONFIGURATION
+# ==========================================================
+
+STRATEGY = "zero_shot"
+PROMPT_VERSION = "v2"
+
+# ==========================================================
+# RESULT FILE
+# ==========================================================
+
+
+
 
 
 with open(
@@ -26,7 +42,8 @@ from config import (
     MODEL_NAME,
     DEV_JSON,
     TABLES_JSON,
-    DATABASE_ROOT
+    DATABASE_ROOT,
+    RESULTS_DIR
 )
 
 loader = DatasetLoader(
@@ -66,16 +83,32 @@ model = HFRunner(
 
 completed = runner.load_completed_questions(
     MODEL_NAME,
-    "zero_shot",
-    "v2"
+    STRATEGY,
+    PROMPT_VERSION
 )
 
 print(f"Completed Questions Found : {len(completed)}")
 
-TEST_MODE = True
-TEST_SIZE = 5
+
 if TEST_MODE:
     benchmark = benchmark[:TEST_SIZE]
+print("=" * 60)
+print("EXPERIMENT CONFIGURATION")
+print("=" * 60)
+
+print("Model          :", MODEL_NAME)
+print("Strategy       :", STRATEGY)
+print("Prompt Version :", PROMPT_VERSION)
+print(
+    "Result Directory :",
+    runner.get_result_file(
+        MODEL_NAME,
+        STRATEGY,
+        PROMPT_VERSION
+    )
+)
+
+print()
 
 print("=" * 60)
 print("RUNNING BENCHMARK")
@@ -105,9 +138,9 @@ for i, sample in enumerate(benchmark):
 
         model_runner=model,
 
-        strategy="zero_shot",
+        strategy=STRATEGY,
 
-        prompt_version="v2"
+        prompt_version=PROMPT_VERSION
 
         )
 

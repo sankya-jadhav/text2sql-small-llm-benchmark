@@ -1,9 +1,6 @@
-from huggingface_hub.inference._generated.types import zero_shot_image_classification
-from main import schema_text
-from huggingface_hub.inference._generated.types import zero_shot_image_classification
+
 import json
 from pathlib import Path
-from dataclasses import asdict
 from config import RESULTS_DIR
 from src.models import EvaluationResult
 
