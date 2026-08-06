@@ -51,3 +51,13 @@ benchmark = sampler.save(
 print()
 
 print(f"Benchmark Saved : {len(benchmark)} questions")
+
+print()
+print("=" * 60)
+print("DATABASE DISTRIBUTION")
+print("=" * 60)
+
+stats = sampler.statistics()
+
+for db, count in sorted(stats.items())[:20]:
+    print(f"{db:30} {count}")

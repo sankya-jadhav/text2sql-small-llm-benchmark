@@ -2,7 +2,7 @@ import json
 import random
 from collections import defaultdict
 from pathlib import Path
-
+from collections import Counter
 
 class StratifiedSampler:
     """
@@ -119,3 +119,17 @@ class StratifiedSampler:
             )
 
         return benchmark
+
+    def statistics(self):
+
+        benchmark = self.sample()
+
+        db_counter = Counter()
+
+        for index in benchmark:
+
+            db_id = self.questions[index]["db_id"]
+
+            db_counter[db_id] += 1
+
+        return db_counter
