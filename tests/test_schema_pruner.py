@@ -21,25 +21,42 @@ def test_schema_pruner():
         "concert_singer"
     )
 
-    question = "How many singers do we have?"
+    questions = [
+        "How many singers do we have?",
+        "What are the different countries with singers above age 20?",
+        "Show all countries and the number of singers in each country.",
+        "How many concerts occurred in 2014 or 2015?",
+        "What are all the song names by singers who are older than average?"
+    ]
 
-    pruned_schema = pruner.prune(
-        schema,
-        question
-    )
+    for question in questions:
 
-    print("\nOriginal tables:")
-    print(
-        list(schema["tables"].keys())
-    )
+        print("\n" + "=" * 60)
+        print("Question:", question)
 
-    print("\nPruned tables:")
-    print(
-        list(pruned_schema["tables"].keys())
-    )
+        pruned_schema = pruner.prune(
+            schema,
+            question
+        )
 
-    assert pruned_schema is not None
-    assert len(pruned_schema["tables"]) > 0
+        print("Original tables:")
+        print(list(schema["tables"].keys()))
+
+        print("Pruned tables:")
+        print(list(pruned_schema["tables"].keys()))
+
+        print(
+            "Original columns:",
+            schema["metadata"]["column_count"]
+        )
+
+        print(
+            "Pruned columns:",
+            pruned_schema["metadata"]["column_count"]
+        )
+
+        assert pruned_schema is not None
+        assert len(pruned_schema["tables"]) > 0
 
 if __name__ == "__main__":
     test_schema_pruner()
