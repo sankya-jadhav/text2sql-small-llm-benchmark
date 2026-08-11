@@ -67,6 +67,14 @@ class EvaluationResult:
     completion_tokens: int | None
     total_tokens: int | None
 
+    # Hybrid / Schema Pruning Metrics
+    initial_execution_success: bool | None = None
+    was_corrected: bool = False
+
+    full_schema_columns: int | None = None
+    pruned_schema_columns: int | None = None
+    schema_reduction_percent: float | None = None
+
     # Error Information
     error: str | None = None
 
