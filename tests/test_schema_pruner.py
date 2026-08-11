@@ -40,3 +40,6 @@ def test_schema_pruner():
 
     assert pruned_schema is not None
     assert len(pruned_schema["tables"]) > 0
+
+if __name__ == "__main__":
+    test_schema_pruner()
