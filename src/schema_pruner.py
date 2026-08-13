@@ -71,10 +71,8 @@ class SchemaPruner:
         # 4. Preserve tables required for foreign-key joins
         # --------------------------------------------------
 
-        relevant_tables = self._add_related_tables(
-            schema,
-            relevant_tables
-        )
+        # Do not automatically expand through every FK relationship.
+        # Join-table preservation will be handled separately.
 
         # --------------------------------------------------
         # 5. Build pruned schema
@@ -182,6 +180,17 @@ class SchemaPruner:
                 return True
 
         return False
+        if self._matches_keyword(
+            column_lower,
+            question_lower
+        ):
+
+            print(
+                f"[PRUNER] Column match: "
+                f"{table_name}.{column}"
+            )
+
+            relevant_tables.add(table_name)
 
     def _add_related_tables(
         self,
@@ -227,3 +236,4 @@ class SchemaPruner:
                     changed = True
 
         return expanded_tables
+#schema_pruner
