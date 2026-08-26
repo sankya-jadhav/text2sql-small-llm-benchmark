@@ -46,9 +46,6 @@ class SchemaPruner:
                 question_lower
             ):
 
-                print(
-                    f"Matched table: {table_name}"
-                )
 
                 relevant_tables.add(table_name)
 
@@ -65,17 +62,19 @@ class SchemaPruner:
                     question_lower
                 ):
 
-                    print(
-                        f"Matched column: "
-                        f"{table_name}.{column}"
-                    )
+
 
                     relevant_tables.add(table_name)
 
         # --------------------------------------------------
-        # 3. If nothing was identified, keep full schema
+       
         # --------------------------------------------------
+        relevant_tables = self._add_join_path_tables(
+            schema,
+            relevant_tables
+        )
 
+        # 3. If nothing was identified, keep full schema
         if not relevant_tables:
 
             logger.debug(
@@ -248,6 +247,113 @@ class SchemaPruner:
                     changed = True
 
         return expanded_tables
+
+    def _add_join_path_tables(
+        self,
+        schema,
+        relevant_tables
+    ):
+        """
+        Add intermediate tables required to connect
+        already relevant tables through foreign-key paths.
+
+        Unlike full FK expansion, this only preserves
+        tables that lie on paths between relevant tables.
+        """
+
+        # If fewer than two tables are relevant,
+        # there is no path to connect.
+        if len(relevant_tables) < 2:
+            return relevant_tables
+
+        # ------------------------------------------
+        # Build an undirected table relationship graph
+        # ------------------------------------------
+
+        graph = {}
+
+        for table_name in schema["tables"]:
+
+            graph[table_name] = set()
+
+        for fk in schema["foreign_keys"]:
+
+            from_table = fk["from_table"]
+            to_table = fk["to_table"]
+
+            graph[from_table].add(to_table)
+            graph[to_table].add(from_table)
+
+        # ------------------------------------------
+        # Find shortest paths between relevant tables
+        # ------------------------------------------
+
+        expanded_tables = set(relevant_tables)
+
+        relevant_list = list(relevant_tables)
+
+        for i in range(len(relevant_list)):
+
+            for j in range(i + 1, len(relevant_list)):
+
+                start_table = relevant_list[i]
+                end_table = relevant_list[j]
+
+                path = self._find_shortest_path(
+                    graph,
+                    start_table,
+                    end_table
+                )
+
+                if path:
+
+                    expanded_tables.update(path)
+
+        return expanded_tables
+
+
+    def _find_shortest_path(
+        self,
+        graph,
+        start,
+        end
+    ):
+        """
+        Find the shortest path between two tables
+        using Breadth-First Search (BFS).
+        """
+
+        if start == end:
+            return [start]
+
+        queue = [
+            (start, [start])
+        ]
+
+        visited = {start}
+
+        while queue:
+
+            current, path = queue.pop(0)
+
+            for neighbor in graph.get(current, []):
+
+                if neighbor == end:
+
+                    return path + [neighbor]
+
+                if neighbor not in visited:
+
+                    visited.add(neighbor)
+
+                    queue.append(
+                        (
+                            neighbor,
+                            path + [neighbor]
+                        )
+                    )
+
+        return None
 #schema_pruner
     def _matches_table(
         self,

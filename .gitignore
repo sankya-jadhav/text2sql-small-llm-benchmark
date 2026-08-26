@@ -3,3 +3,4 @@ test_database/
 data/excluded_databases
 __pycache__/
 *.pyc
+test/test_car1_schema.py
