@@ -19,8 +19,8 @@ from src.schema_pruner import SchemaPruner
 # EXPERIMENT CONFIGURATION
 # ==========================================================
 
-STRATEGY = "schema_pruned"
-PROMPT_VERSION = "v2"
+STRATEGY = "zero_shot"
+PROMPT_VERSION = "v2_pruned"
 
 # ==========================================================
 # RESULT FILE
