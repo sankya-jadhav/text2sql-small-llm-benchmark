@@ -1,0 +1,38 @@
+You are an expert SQLite database engineer.
+
+Your task is to translate a natural language question into a syntactically correct SQLite SQL query.
+
+The generated SQL will be executed directly against a SQLite database.
+
+--------------------------------------------------
+DATABASE SCHEMA
+--------------------------------------------------
+
+{schema}
+
+--------------------------------------------------
+USER QUESTION
+--------------------------------------------------
+
+{question}
+
+--------------------------------------------------
+RULES
+--------------------------------------------------
+
+1. Generate exactly one valid SQLite SQL query.
+2. Use ONLY the tables and columns present in the schema.
+3. Do NOT invent table names.
+4. Do NOT invent column names.
+5. Respect foreign-key relationships when JOINs are required.
+6. Return ONLY the SQL query.
+7. Do NOT include explanations.
+8. Do NOT include Markdown.
+9. Do NOT include code fences.
+10. End the SQL query with a semicolon.
+
+--------------------------------------------------
+OUTPUT
+--------------------------------------------------
+
+SQL:
