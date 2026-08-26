@@ -46,3 +46,28 @@ SQL post-processing and formatting errors
 Overall, the experiment currently indicates that schema pruning provides meaningful efficiency benefits through substantial schema and prompt reduction, but the current keyword-based strategy can negatively affect complex queries that require multiple tables, relationship tables, or precise join paths.
 
 The next step is to re-evaluate the existing results using the improved SQL cleaner and then perform a detailed error-category analysis on the remaining failures.
+
+
+Your main finding can now be stated as:
+
+The keyword-based schema pruning approach achieved substantial efficiency improvements while maintaining accuracy close to the full-schema baseline. On 180 SPIDER benchmark questions, schema pruning reduced the average schema size by 40.46%, prompt tokens by 20.72%, and inference latency by 7.40%. After correcting SQL evaluation artifacts caused by repeated trailing semicolons, execution accuracy decreased from 75.56% to 74.44%, representing a relatively small reduction of 1.12 percentage points.
+
+And the trade-off is very clear:
+
+The results indicate that schema pruning can substantially reduce the input context with limited degradation in execution accuracy. However, the remaining 11 cases where pruning hurt performance demonstrate that a simple keyword-based pruning strategy may fail to preserve important relational or semantic information required for complex SQL generation.
+
+
+
+| Question ID | Database                     | Error Type                 | What Pruning Caused                | Example                           |
+| ----------- | ---------------------------- | -------------------------- | ---------------------------------- | --------------------------------- |
+| 37          | concert_singer               | Incorrect Join             | Missing/incorrect relationship     | concert directly joined to singer |
+| 57          | pets_1                       | Semantic Error             | Lost DISTINCT                      | duplicate results                 |
+| 158         | car_1                        | Semantic Misinterpretation | Extra table changed interpretation | Volvo logic changed               |
+| 179         | flight_2                     | Invalid Table              | Incorrect table introduced         | `countries` doesn't exist         |
+| 421         | museum_visit                 | Invalid Column             | Hallucinated column                | `Visit_ID`                        |
+| 534         | student_transcripts_tracking | Aggregation Error          | COUNT DISTINCT changed semantics   | degree programs                   |
+| 692         | voter_1                      | Unnecessary Join           | Changed result multiplicity        | votes join                        |
+| 693         | voter_1                      | Unnecessary Join           | Changed DISTINCT output            | area_code_state                   |
+| 701         | voter_1                      | Unnecessary Join           | Changed result set                 | votes join                        |
+| 780         | world_1                      | Semantic Error             | Missing DISTINCT                   | duplicate country codes           |
+| 1027        | singer                       | Invalid Column             | Column hallucination               | `sname` instead of `Name`         |
