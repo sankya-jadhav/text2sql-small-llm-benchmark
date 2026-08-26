@@ -7,6 +7,17 @@ logger = get_logger(__name__)
 
 
 class SchemaPruner:
+    GENERIC_COLUMN_WORDS = {
+        "id",
+        "name",
+        "date",
+        "year",
+        "number",
+        "average",
+        "count",
+        "type"
+    }
+
 
     def __init__(self):
         pass
@@ -30,12 +41,15 @@ class SchemaPruner:
 
         for table_name in schema["tables"]:
 
-            table_lower = table_name.lower()
-
-            if self._matches_keyword(
-                table_lower,
+            if self._matches_table(
+                table_name,
                 question_lower
             ):
+
+                print(
+                    f"Matched table: {table_name}"
+                )
+
                 relevant_tables.add(table_name)
 
         # --------------------------------------------------
@@ -46,12 +60,16 @@ class SchemaPruner:
 
             for column in columns:
 
-                column_lower = column.lower()
-
-                if self._matches_keyword(
-                    column_lower,
+                if self._matches_column(
+                    column,
                     question_lower
                 ):
+
+                    print(
+                        f"Matched column: "
+                        f"{table_name}.{column}"
+                    )
+
                     relevant_tables.add(table_name)
 
         # --------------------------------------------------
@@ -157,15 +175,8 @@ class SchemaPruner:
 
     def _matches_keyword(self, schema_name, question):
 
-        """
-        Check whether a schema name appears as a meaningful
-        word/phrase in the question.
-        """
-
-        # Convert underscores into spaces.
         normalized_name = schema_name.replace("_", " ")
 
-        # Match complete words rather than arbitrary substrings.
         words = normalized_name.split()
 
         for word in words:
@@ -173,24 +184,25 @@ class SchemaPruner:
             if len(word) <= 2:
                 continue
 
-            pattern = r"\b" + re.escape(word) + r"\b"
+            candidates = {word}
 
-            if re.search(pattern, question):
+            # Basic singular/plural handling
+            if not word.endswith("s"):
+                candidates.add(word + "s")
 
-                return True
+            if word.endswith("y") and len(word) > 2:
+                candidates.add(word[:-1] + "ies")
+
+            for candidate in candidates:
+
+                pattern = r"\b" + re.escape(candidate) + r"\b"
+
+                if re.search(pattern, question):
+
+                    return True
+            
 
         return False
-        if self._matches_keyword(
-            column_lower,
-            question_lower
-        ):
-
-            print(
-                f"[PRUNER] Column match: "
-                f"{table_name}.{column}"
-            )
-
-            relevant_tables.add(table_name)
 
     def _add_related_tables(
         self,
@@ -237,3 +249,153 @@ class SchemaPruner:
 
         return expanded_tables
 #schema_pruner
+    def _matches_table(
+        self,
+        table_name,
+        question
+    ):
+
+        normalized_name = table_name.lower().replace(
+            "_",
+            " "
+        )
+
+        words = normalized_name.split()
+
+        # ------------------------------------------
+        # Simple table name
+        # Example: singer
+        # ------------------------------------------
+
+        if len(words) == 1:
+
+            word = words[0]
+
+            candidates = {word}
+
+            if not word.endswith("s"):
+                candidates.add(word + "s")
+
+            if word.endswith("y"):
+                candidates.add(word[:-1] + "ies")
+
+            for candidate in candidates:
+
+                pattern = (
+                    r"\b" +
+                    re.escape(candidate) +
+                    r"\b"
+                )
+
+                if re.search(pattern, question):
+
+                    return True
+
+            return False
+
+        # ------------------------------------------
+        # Compound table name
+        # Example: singer_in_concert
+        # ------------------------------------------
+
+        meaningful_words = [
+
+            word
+            for word in words
+            if len(word) > 2
+            and word not in {"in", "of", "to", "and"}
+        ]
+
+        matches = 0
+
+        for word in meaningful_words:
+
+            candidates = {word}
+
+            if not word.endswith("s"):
+                candidates.add(word + "s")
+
+            for candidate in candidates:
+
+                pattern = (
+                    r"\b" +
+                    re.escape(candidate) +
+                    r"\b"
+                )
+
+                if re.search(pattern, question):
+
+                    matches += 1
+                    break
+
+        # Require ALL meaningful parts
+        # of compound table names to match
+
+        return (
+            matches == len(meaningful_words)
+        )
+
+    def _matches_column(
+        self,
+        column_name,
+        question
+    ):
+        column_lower = column_name.lower()
+
+        # ------------------------------------------
+        # Ignore identifier / foreign-key columns
+        # ------------------------------------------
+
+        if (
+            column_lower == "id"
+            or column_lower.endswith("_id")
+            or column_lower.endswith(" id")
+        ):
+            return False
+
+        normalized_name = column_name.lower().replace(
+            "_",
+            " "
+        )
+
+        words = normalized_name.split()
+
+        meaningful_words = []
+
+        for word in words:
+
+            if (
+                len(word) > 2
+                and word not in self.GENERIC_COLUMN_WORDS
+            ):
+
+                meaningful_words.append(word)
+
+        # Ignore completely generic columns
+        if not meaningful_words:
+
+            return False
+
+        for word in meaningful_words:
+
+            candidates = {word}
+
+            if not word.endswith("s"):
+                candidates.add(word + "s")
+
+            if word.endswith("y"):
+                candidates.add(word[:-1] + "ies")
+
+            for candidate in candidates:
+
+                pattern = (
+                    r"\b" +
+                    re.escape(candidate) +
+                    r"\b"
+                )
+
+                if re.search(pattern, question):
+
+                    return True
+
+        return False
