@@ -4,6 +4,20 @@ import re
 class SQLCleaner:
 
     @staticmethod
+    def _normalize(sql: str) -> str:
+        """
+        Normalize SQL before execution.
+        """
+
+        sql = sql.strip()
+
+        # Remove all trailing semicolons
+        sql = re.sub(r";+\s*$", "", sql)
+
+        return sql.strip()
+
+
+    @staticmethod
     def clean(text: str) -> str:
 
         if not text:
@@ -12,7 +26,7 @@ class SQLCleaner:
         text = text.strip()
 
         # ---------------------------------------
-        # Case 1 : ```sql ... ```
+        # Case 1: ```sql ... ```
         # ---------------------------------------
 
         match = re.search(
@@ -22,10 +36,12 @@ class SQLCleaner:
         )
 
         if match:
-            return match.group(1).strip()
+            return SQLCleaner._normalize(
+                match.group(1)
+            )
 
         # ---------------------------------------
-        # Case 2 : ``` ... ```
+        # Case 2: ``` ... ```
         # ---------------------------------------
 
         match = re.search(
@@ -35,19 +51,30 @@ class SQLCleaner:
         )
 
         if match:
-            return match.group(1).strip()
+            return SQLCleaner._normalize(
+                match.group(1)
+            )
 
         # ---------------------------------------
-        # Case 3 : First SQL statement
+        # Case 3: Extract SQL starting with SELECT
         # ---------------------------------------
 
         match = re.search(
-            r"(SELECT[\s\S]*?;)",
+            r"\b(SELECT\b[\s\S]*)",
             text,
             flags=re.IGNORECASE
         )
 
         if match:
-            return match.group(1).strip()
+            text = match.group(1)
 
-        return text
+        # ---------------------------------------
+        # Keep only first statement
+        # ---------------------------------------
+
+        text = text.strip()
+
+        if ";" in text:
+            text = text.split(";")[0]
+
+        return SQLCleaner._normalize(text)

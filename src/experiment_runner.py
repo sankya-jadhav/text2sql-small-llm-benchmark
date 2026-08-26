@@ -142,6 +142,8 @@ class ExperimentRunner:
             generation.generated_sql
         )
 
+
+
         gold_result = self.sql_executor.execute(
             database,
             sample["query"]
