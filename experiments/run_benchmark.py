@@ -12,13 +12,14 @@ from src.evaluator import Evaluator
 from src.experiment_runner import ExperimentRunner
 from src.hf_runner import HFRunner
 from config import TEST_MODE, TEST_SIZE
+from src.schema_pruner import SchemaPruner
 
 
 # ==========================================================
 # EXPERIMENT CONFIGURATION
 # ==========================================================
 
-STRATEGY = "zero_shot"
+STRATEGY = "schema_pruned"
 PROMPT_VERSION = "v2"
 
 # ==========================================================
@@ -64,6 +65,8 @@ runner = ExperimentRunner(
     schema_extractor=SchemaExtractor(
         loader.tables_data
     ),
+
+    schema_pruner=SchemaPruner(),
 
     schema_formatter=SchemaFormatter(),
 

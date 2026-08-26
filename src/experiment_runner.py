@@ -3,15 +3,17 @@ import json
 from pathlib import Path
 from config import RESULTS_DIR
 from src.models import EvaluationResult
-
+from src.schema_pruner import SchemaPruner
 
 class ExperimentRunner:
 
     def __init__(
+
         self,
         loader,
         database_manager,
         schema_extractor,
+        schema_pruner,
         schema_formatter,
         prompt_builder,
         model_runner,
@@ -26,7 +28,10 @@ class ExperimentRunner:
 
         self.schema_extractor = schema_extractor
 
+        self.schema_pruner = schema_pruner
+
         self.schema_formatter = schema_formatter
+
 
         self.prompt_builder = prompt_builder
 
@@ -68,7 +73,8 @@ class ExperimentRunner:
         question_index: int,
         model_runner,
         strategy: str = "zero_shot",
-        prompt_version: str = "v2"
+        prompt_version: str = "v2",
+        use_schema_pruner: bool = False
     ):
 
         sample = self.loader.get_question(
@@ -79,12 +85,44 @@ class ExperimentRunner:
             sample["db_id"]
         )
 
+        # Get full schema
         schema = self.schema_extractor.get_schema(
             sample["db_id"]
         )
 
+        # Prune schema based on the question
+        pruned_schema = self.schema_pruner.prune(
+            schema,
+            sample["question"]
+        )
+
+        # --------------------------------------------------
+        # Schema reduction metrics
+        # --------------------------------------------------
+
+        full_schema_columns = sum(
+            len(columns)
+            for columns in schema["tables"].values()
+        )
+
+        pruned_schema_columns = sum(
+            len(columns)
+            for columns in pruned_schema["tables"].values()
+        )
+
+        schema_reduction_percent = (
+            (
+                full_schema_columns - pruned_schema_columns
+            )
+            / full_schema_columns
+            * 100
+            if full_schema_columns > 0
+            else 0.0
+        )
+
+        # Format the PRUNED schema for the model
         schema_text = self.schema_formatter.format(
-            schema
+            pruned_schema
         )
 
         prompt = self.prompt_builder.build(
@@ -153,6 +191,10 @@ class ExperimentRunner:
             prompt_tokens=generation.prompt_tokens,
             completion_tokens=generation.completion_tokens,
             total_tokens=generation.total_tokens,
+            # Schema pruning metrics
+            full_schema_columns=full_schema_columns,
+            pruned_schema_columns=pruned_schema_columns,
+            schema_reduction_percent=schema_reduction_percent,
 
             # Errors
             error=generated_result.error
