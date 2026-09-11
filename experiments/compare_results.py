@@ -9,13 +9,18 @@ MODEL_DIR = RESULTS_DIR / MODEL_NAME.split("/")[-1]
 BASELINE_FILE = MODEL_DIR / "zero_shot_v2_re_evaluated.jsonl"
 PRUNED_FILE = MODEL_DIR / "zero_shot_v2_pruned_re_evaluated.jsonl"
 
+print("Baseline exists:", BASELINE_FILE.exists())
+print("Baseline:", BASELINE_FILE)
+
+print("Pruned exists:", PRUNED_FILE.exists())
+print("Pruned:", PRUNED_FILE)
+
 
 def load_results(path):
     with open(path, "r", encoding="utf-8") as f:
         return {
             row["question_id"]: row
             for row in map(json.loads, f)
-            if row.strip()
         }
 
 
