@@ -1,0 +1,20 @@
+You are a Text-to-SQL system.
+
+The following SQL query was generated for the question below, but it failed during execution.
+
+Database schema:
+{schema}
+
+Question:
+{question}
+
+Generated SQL:
+{generated_sql}
+
+Execution error:
+{error}
+
+Correct the SQL query so that it answers the question and executes successfully on the given database schema.
+
+Return only the corrected SQL query.
+Do not provide explanations.

@@ -109,4 +109,25 @@ class PromptBuilder:
                 f"Unknown strategy: {strategy}"
             )
 
-        return builders[strategy]() 
+        return builders[strategy]()
+
+
+    def build_execution_feedback(
+        self,
+        schema: str,
+        question: str,
+        generated_sql: str,
+        error: str,
+        version: str = "v1"
+    ) -> str:
+
+        template = self._load_template(
+            f"execution_feedback_{version}.txt"
+        )
+
+        return template.format(
+            schema=schema,
+            question=question,
+            generated_sql=generated_sql,
+            error=error
+        )

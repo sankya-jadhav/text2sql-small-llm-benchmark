@@ -67,10 +67,19 @@ class EvaluationResult:
     completion_tokens: int | None
     total_tokens: int | None
 
-    # Hybrid / Schema Pruning Metrics
+    # Execution Feedback
+    initial_sql: str | None = None
+    corrected_sql: str | None = None
+    initial_error: str | None = None
     initial_execution_success: bool | None = None
     was_corrected: bool = False
 
+    feedback_latency: float = 0.0
+    feedback_prompt_tokens: int | None = None
+    feedback_completion_tokens: int | None = None
+    feedback_total_tokens: int | None = None
+
+    # Schema Pruning Metrics
     full_schema_columns: int | None = None
     pruned_schema_columns: int | None = None
     schema_reduction_percent: float | None = None
