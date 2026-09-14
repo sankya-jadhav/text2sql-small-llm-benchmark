@@ -24,7 +24,7 @@ from src.schema_pruner import SchemaPruner
 STRATEGY = "zero_shot"
 PROMPT_VERSION = "v2"
 
-RESULT_NAME = "deepseek_zero_shot_v2"
+RESULT_NAME = "deepseek_hybrid_v1"
 
 # ==========================================================
 # RESULT FILE
