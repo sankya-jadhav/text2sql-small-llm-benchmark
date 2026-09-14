@@ -55,8 +55,7 @@ class ExperimentRunner:
 
         output_file = self.get_result_file(
             result.model_name,
-            result_name or result.prompt_type,
-            result.prompt_version
+            result_name or result.prompt_type
         )
 
         with open(
