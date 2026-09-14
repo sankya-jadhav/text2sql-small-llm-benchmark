@@ -22,7 +22,9 @@ from src.schema_pruner import SchemaPruner
 # ==========================================================
 
 STRATEGY = "zero_shot"
-PROMPT_VERSION = "v3_execution_feedback"
+PROMPT_VERSION = "v2"
+
+RESULT_NAME = "hybrid_v1"
 
 # ==========================================================
 # RESULT FILE
@@ -119,8 +121,7 @@ runner = ExperimentRunner(
 
 completed = runner.load_completed_questions(
     MODEL_NAME,
-    STRATEGY,
-    PROMPT_VERSION
+    RESULT_NAME
 )
 
 print(f"Completed Questions Found : {len(completed)}")
@@ -139,8 +140,7 @@ print(
     "Result Directory :",
     runner.get_result_file(
         MODEL_NAME,
-        STRATEGY,
-        PROMPT_VERSION
+        RESULT_NAME
     )
 )
 
@@ -170,15 +170,17 @@ for i, sample in enumerate(benchmark):
         
         result = runner.run_question(
 
-        question_index=question_index,
+            question_index=question_index,
 
-        model_runner=model,
+            model_runner=model,
 
-        strategy=STRATEGY,
+            strategy=STRATEGY,
 
-        prompt_version=PROMPT_VERSION,
+            prompt_version=PROMPT_VERSION,
 
-        use_schema_pruner=True
+            use_schema_pruner=True,
+            
+            result_name=RESULT_NAME
 
         )
 

@@ -49,12 +49,13 @@ class ExperimentRunner:
 
     def save_result(
         self,
-        result: EvaluationResult
+        result: EvaluationResult,
+        result_name: str | None = None
     ):
 
         output_file = self.get_result_file(
             result.model_name,
-            result.prompt_type,
+            result_name or result.prompt_type,
             result.prompt_version
         )
 
@@ -77,7 +78,8 @@ class ExperimentRunner:
         model_runner,
         strategy: str = "zero_shot",
         prompt_version: str = "v2",
-        use_schema_pruner: bool = False
+        use_schema_pruner: bool = False,
+        result_name: str | None = None
     ):
 
         sample = self.loader.get_question(
@@ -273,7 +275,7 @@ class ExperimentRunner:
         )
 
 
-        self.save_result(result)
+        self.save_result(result,result_name=result_name)
 
         return result
 
@@ -281,8 +283,7 @@ class ExperimentRunner:
     def get_result_file(
         self,
         model_name,
-        strategy,
-        version
+        result_name
     ):
         """
         Returns the JSONL file for one experiment.
@@ -297,14 +298,13 @@ class ExperimentRunner:
             exist_ok=True
         )
 
-        return model_dir / f"{strategy}_{version}.jsonl"
+        return model_dir / f"{result_name}.jsonl"
 
 
     def load_completed_questions(
         self,
         model_name,
-        strategy,
-        version
+        result_name
     ):
         """
         Returns all completed question ids.
@@ -314,8 +314,7 @@ class ExperimentRunner:
 
         result_file = self.get_result_file(
             model_name,
-            strategy,
-            version
+            result_name
         )
 
         if not result_file.exists():
