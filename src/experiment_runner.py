@@ -3,7 +3,6 @@ import json
 from pathlib import Path
 from config import RESULTS_DIR
 from src.models import EvaluationResult
-from src.schema_pruner import SchemaPruner
 
 class ExperimentRunner:
 
@@ -18,6 +17,8 @@ class ExperimentRunner:
         prompt_builder,
         model_runner,
         sql_executor,
+        sql_cleaner,
+        execution_feedback,
         evaluator,
         result_dir=RESULTS_DIR
     ):
@@ -32,12 +33,14 @@ class ExperimentRunner:
 
         self.schema_formatter = schema_formatter
 
-
         self.prompt_builder = prompt_builder
 
         self.model_runner = model_runner
 
         self.sql_executor = sql_executor
+
+        self.sql_cleaner = sql_cleaner
+        self.execution_feedback = execution_feedback
 
         self.evaluator = evaluator
 
@@ -91,11 +94,13 @@ class ExperimentRunner:
         )
 
         # Prune schema based on the question
-        pruned_schema = self.schema_pruner.prune(
-            schema,
-            sample["question"]
-        )
-
+        if use_schema_pruner:
+            working_schema = self.schema_pruner.prune(
+                schema,
+                sample["question"]
+            )
+        else:
+            working_schema = schema
         # --------------------------------------------------
         # Schema reduction metrics
         # --------------------------------------------------
@@ -107,7 +112,7 @@ class ExperimentRunner:
 
         pruned_schema_columns = sum(
             len(columns)
-            for columns in pruned_schema["tables"].values()
+            for columns in working_schema["tables"].values()
         )
 
         schema_reduction_percent = (
@@ -120,9 +125,9 @@ class ExperimentRunner:
             else 0.0
         )
 
-        # Format the PRUNED schema for the model
+       # Format the working schema for the model
         schema_text = self.schema_formatter.format(
-            pruned_schema
+            working_schema
         )
 
         prompt = self.prompt_builder.build(
@@ -132,15 +137,66 @@ class ExperimentRunner:
             version=prompt_version
         )
 
+        # --------------------------------------------------
+        # Initial SQL Generation
+        # --------------------------------------------------
+
         generation = model_runner.generate(
             prompt,
             prompt_type=strategy
         )
 
-        generated_result = self.sql_executor.execute(
-            database,
+        initial_sql = self.sql_cleaner.clean(
             generation.generated_sql
         )
+
+        generation.generated_sql = initial_sql
+
+        generated_result = self.sql_executor.execute(
+            database,
+            initial_sql
+        )
+
+        # --------------------------------------------------
+        # Execution Feedback
+        # --------------------------------------------------
+
+        initial_execution_success = generated_result.success
+        initial_error = generated_result.error
+
+        corrected_sql = None
+        was_corrected = False
+
+        feedback_latency = 0.0
+        feedback_prompt_tokens = None
+        feedback_completion_tokens = None
+        feedback_total_tokens = None
+
+        if not generated_result.success:
+
+            feedback_generation, feedback_result = (
+                self.execution_feedback.correct_sql(
+                    model_runner=model_runner,
+                    database=database,
+                    schema=schema_text,
+                    question=sample["question"],
+                    generated_sql=initial_sql,
+                    execution_error=generated_result.error
+                )
+            )
+
+            corrected_sql = feedback_generation.generated_sql
+
+            generated_result = feedback_result
+
+            was_corrected = True
+
+            feedback_latency = feedback_generation.latency
+            feedback_prompt_tokens = feedback_generation.prompt_tokens
+            feedback_completion_tokens = feedback_generation.completion_tokens
+            feedback_total_tokens = feedback_generation.total_tokens
+
+            generation.generated_sql = corrected_sql
 
 
 
@@ -193,6 +249,20 @@ class ExperimentRunner:
             prompt_tokens=generation.prompt_tokens,
             completion_tokens=generation.completion_tokens,
             total_tokens=generation.total_tokens,
+
+            # Execution Feedback
+            initial_sql=initial_sql,
+            corrected_sql=corrected_sql,
+            initial_error=initial_error,
+            initial_execution_success=initial_execution_success,
+            was_corrected=was_corrected,
+
+            feedback_latency=feedback_latency,
+            feedback_prompt_tokens=feedback_prompt_tokens,
+            feedback_completion_tokens=feedback_completion_tokens,
+            feedback_total_tokens=feedback_total_tokens,
+
+            
             # Schema pruning metrics
             full_schema_columns=full_schema_columns,
             pruned_schema_columns=pruned_schema_columns,

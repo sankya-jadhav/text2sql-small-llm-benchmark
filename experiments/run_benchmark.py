@@ -8,6 +8,8 @@ from src.schema_extractor import SchemaExtractor
 from src.schema_formatter import SchemaFormatter
 from src.prompt_builder import PromptBuilder
 from src.sql_executor import SQLExecutor
+from src.execution_feedback import ExecutionFeedback
+from src.sql_cleaner import SQLCleaner
 from src.evaluator import Evaluator
 from src.experiment_runner import ExperimentRunner
 from src.hf_runner import HFRunner
@@ -20,7 +22,7 @@ from src.schema_pruner import SchemaPruner
 # ==========================================================
 
 STRATEGY = "zero_shot"
-PROMPT_VERSION = "v2_pruned"
+PROMPT_VERSION = "v3_execution_feedback"
 
 # ==========================================================
 # RESULT FILE
@@ -56,33 +58,64 @@ manager = DatabaseManager(
     DATABASE_ROOT
 )
 
+
+
+schema_extractor = SchemaExtractor(
+    loader.tables_data
+)
+
+
+
+schema_pruner = SchemaPruner()
+
+schema_formatter = SchemaFormatter()
+
+prompt_builder = PromptBuilder()
+
+sql_executor = SQLExecutor()
+
+sql_cleaner = SQLCleaner()
+
+evaluator = Evaluator()
+
+model = HFRunner(
+    MODEL_NAME
+)
+
+execution_feedback = ExecutionFeedback(
+    prompt_builder=prompt_builder,
+    sql_cleaner=sql_cleaner,
+    sql_executor=sql_executor
+)
+
+
 runner = ExperimentRunner(
 
     loader=loader,
 
     database_manager=manager,
 
-    schema_extractor=SchemaExtractor(
-        loader.tables_data
-    ),
+    schema_extractor=schema_extractor,
 
-    schema_pruner=SchemaPruner(),
+    schema_pruner=schema_pruner,
 
-    schema_formatter=SchemaFormatter(),
+    schema_formatter=schema_formatter,
 
-    prompt_builder=PromptBuilder(),
+    prompt_builder=prompt_builder,
 
     model_runner=None,
 
-    sql_executor=SQLExecutor(),
+    sql_executor=sql_executor,
 
-    evaluator=Evaluator()
+    sql_cleaner=sql_cleaner,
+
+    execution_feedback=execution_feedback,
+
+    evaluator=evaluator
 
 )
 
-model = HFRunner(
-    MODEL_NAME
-)
+
 
 completed = runner.load_completed_questions(
     MODEL_NAME,
@@ -143,7 +176,9 @@ for i, sample in enumerate(benchmark):
 
         strategy=STRATEGY,
 
-        prompt_version=PROMPT_VERSION
+        prompt_version=PROMPT_VERSION,
+
+        use_schema_pruner=True
 
         )
 
@@ -151,7 +186,12 @@ for i, sample in enumerate(benchmark):
 
         print("Execution Accuracy :", result.execution_accuracy)
         print("Exact Match        :", result.exact_match)
+        print("Valid SQL          :", result.valid_sql)
+        print("Initial Execution  :", result.initial_execution_success)
+        print("Was Corrected      :", result.was_corrected)
+        print("Initial Error      :", result.initial_error)
         print("Latency            :", f"{result.latency:.2f}s")
+        print("Feedback Latency   :", f"{result.feedback_latency:.2f}s")
         print()
     except Exception as e:
 

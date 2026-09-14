@@ -3,17 +3,16 @@ class ExecutionFeedback:
     def __init__(
         self,
         prompt_builder,
-        model_runner,
         sql_cleaner,
         sql_executor
     ):
         self.prompt_builder = prompt_builder
-        self.model_runner = model_runner
         self.sql_cleaner = sql_cleaner
         self.sql_executor = sql_executor
 
     def correct_sql(
         self,
+        model_runner,
         database,
         schema,
         question,
@@ -29,7 +28,7 @@ class ExecutionFeedback:
             version="v1"
         )
 
-        generation = self.model_runner.generate(
+        generation = model_runner.generate(
             prompt,
             prompt_type="execution_feedback"
         )
