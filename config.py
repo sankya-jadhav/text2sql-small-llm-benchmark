@@ -56,7 +56,7 @@ DEFAULT_PROMPT_VERSION = "v2"
 # MODEL
 # ==========================================================
 
-MODEL_NAME = "deepseek-ai/deepseek-coder-6.7b-instruct"
+MODEL_NAME = "meta-llama/Llama-3.1-8B-Instruct"
 
 LOAD_IN_4BIT = True
 
@@ -91,5 +91,5 @@ RANDOM_SEED = 42
 
 DEBUG = False
 
-TEST_MODE = False
+TEST_MODE = True
 TEST_SIZE = 1
