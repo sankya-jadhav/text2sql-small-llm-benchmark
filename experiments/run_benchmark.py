@@ -24,7 +24,7 @@ from src.schema_pruner import SchemaPruner
 STRATEGY = "zero_shot"
 PROMPT_VERSION = "v2"
 
-RESULT_NAME = "llama_zero_shot_v2"
+RESULT_NAME = "llama_hybrid_v1"
 
 # ==========================================================
 # RESULT FILE
@@ -178,7 +178,7 @@ for i, sample in enumerate(benchmark):
 
             prompt_version=PROMPT_VERSION,
 
-            use_schema_pruner=False,
+            use_schema_pruner=True,
             
             result_name=RESULT_NAME
 
