@@ -43,11 +43,48 @@ print("=" * 80)
 
 for row in rows:
 
+    print("=" * 80)
+
     print(
-        f"{row['experiment']:25s} "
-        f"Q{row['question_id']:>4s} "
-        f"{row['classification']}"
+        f"Experiment     : {row['experiment']}"
     )
+
+    print(
+        f"Question ID    : {row['question_id']}"
+    )
+
+    print(
+        f"Database       : {row['db_id']}"
+    )
+
+    print(
+        f"Classification  : {row['classification']}"
+    )
+
+    print(
+        f"Gold ORDER BY   : {row['gold_has_order_by']}"
+    )
+
+    print(
+        f"Generated ORDER : {row['generated_has_order_by']}"
+    )
+
+    print()
+
+    print("QUESTION:")
+    print(row["question"])
+
+    print()
+
+    print("GOLD SQL:")
+    print(row["gold_sql"])
+
+    print()
+
+    print("GENERATED SQL:")
+    print(row["generated_sql"])
+
+    print()
 
 
 # ------------------------------------------------------------
