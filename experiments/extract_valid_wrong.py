@@ -90,11 +90,11 @@ for experiment_name, (model_dir, filename) in EXPERIMENTS.items():
             # Determine whether SQL was valid/executable
             # ------------------------------------------------
 
-            if "initial_execution_success" in result:
-                initial_execution_success = result[
-                    "initial_execution_success"
-                ]
-            else:
+            initial_execution_success = result.get(
+                "initial_execution_success"
+            )
+
+            if initial_execution_success is None:
                 initial_execution_success = result.get(
                     "valid_sql",
                     False
